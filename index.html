@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Mundo de Abelardo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Mono:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #050810;
+    --deep: #080d1a;
+    --navy: #0a1628;
+    --blue-dark: #0d2045;
+    --blue-mid: #1a3a6b;
+    --blue: #1e5fad;
+    --blue-bright: #2e7ae0;
+    --blue-glow: #4a9eff;
+    --blue-light: #7ec8f5;
+    --cyan: #00d4ff;
+    --white: #f0f6ff;
+    --gray: #8a9bb5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--black);
+    color: var(--white);
+    font-family: 'Lato', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--cyan);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    box-shadow: 0 0 20px var(--cyan);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(0,212,255,0.4);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.15s ease, width 0.3s, height 0.3s;
+  }
+
+  /* Star background */
+  .stars {
+    position: fixed;
+    width: 100%; height: 100%;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur) infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: 0.1; transform: scale(1); }
+    to   { opacity: 0.8; transform: scale(1.3); }
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 60px;
+    background: linear-gradient(180deg, rgba(5,8,16,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(4px);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--cyan); }
+  .nav-links { display: flex; gap: 36px; }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gray);
+    text-decoration: none;
+    transition: color 0.3s, text-shadow 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0;
+    width: 0; height: 1px;
+    background: var(--cyan);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 1;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgba(30,95,173,0.25) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 80% 20%, rgba(0,212,255,0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 10% 80%, rgba(13,32,69,0.5) 0%, transparent 70%);
+  }
+
+  /* Animated globe lines */
+  .globe-container {
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 500px; height: 500px;
+    opacity: 0.15;
+  }
+  .globe-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--blue-glow);
+    top: 50%; left: 50%;
+    transform-origin: center center;
+    animation: spinRing linear infinite;
+  }
+  @keyframes spinRing {
+    from { transform: translate(-50%, -50%) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(0deg); }
+    to   { transform: translate(-50%, -50%) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(360deg); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 900px;
+    padding: 0 40px;
+  }
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 6px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeUp 1s ease forwards;
+    opacity: 0;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    font-weight: 900;
+    line-height: 0.9;
+    margin-bottom: 30px;
+    animation: fadeUp 1s 0.2s ease forwards;
+    opacity: 0;
+  }
+  .hero-title .line1 { display: block; color: var(--white); }
+  .hero-title .line2 { display: block; color: transparent; -webkit-text-stroke: 1px var(--blue-glow); font-style: italic; }
+  .hero-title .line3 { display: block; color: var(--blue-bright); }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--gray);
+    font-weight: 300;
+    line-height: 1.8;
+    max-width: 550px;
+    margin: 0 auto 40px;
+    animation: fadeUp 1s 0.4s ease forwards;
+    opacity: 0;
+  }
+  .hero-cta {
+    display: inline-block;
+    padding: 14px 40px;
+    border: 1px solid var(--blue-bright);
+    color: var(--blue-light);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.3s;
+    animation: fadeUp 1s 0.6s ease forwards;
+    opacity: 0;
+  }
+  .hero-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--blue-bright);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+    z-index: -1;
+  }
+  .hero-cta:hover { color: var(--black); }
+  .hero-cta:hover::before { transform: translateX(0); }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: fadeIn 2s 1.5s forwards;
+    opacity: 0;
+  }
+  .scroll-indicator span {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 4px;
+    color: var(--gray);
+  }
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--blue-bright), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.5); opacity: 0.3; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 70px;
+  }
+  .section-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 6px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+  }
+  .section-divider {
+    width: 60px; height: 2px;
+    background: linear-gradient(to right, var(--blue-bright), var(--cyan));
+    margin: 20px auto 0;
+  }
+
+  /* ABOUT */
+  #sobre-mi {
+    padding: 120px 60px;
+    background: linear-gradient(180deg, var(--black) 0%, var(--deep) 100%);
+  }
+  .about-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .about-image-frame {
+    position: relative;
+  }
+  .about-image-placeholder {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue-mid) 100%);
+    border: 1px solid rgba(74,158,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .about-image-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(0,212,255,0.05) 100%);
+  }
+  .about-image-placeholder .avatar-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem;
+    color: rgba(74,158,255,0.3);
+    font-weight: 900;
+    font-style: italic;
+    user-select: none;
+  }
+  .about-frame-deco {
+    position: absolute;
+    bottom: -20px; right: -20px;
+    width: 60%; height: 60%;
+    border: 1px solid rgba(0,212,255,0.2);
+    z-index: -1;
+  }
+  .about-frame-dot {
+    position: absolute;
+    top: -10px; left: -10px;
+    width: 20px; height: 20px;
+    background: var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--cyan);
+  }
+  .about-text h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 5px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .about-text p {
+    font-size: 1.05rem;
+    color: rgba(240,246,255,0.75);
+    line-height: 1.9;
+    margin-bottom: 20px;
+    font-weight: 300;
+  }
+  .stats-row {
+    display: flex;
+    gap: 40px;
+    margin-top: 40px;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--blue-glow);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 3px;
+    color: var(--gray);
+    text-transform: uppercase;
+    margin-top: 5px;
+  }
+
+  /* BLOG POSTS */
+  #blog {
+    padding: 120px 60px;
+    background: var(--deep);
+  }
+  .posts-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+  .post-card {
+    background: var(--navy);
+    border: 1px solid rgba(30,95,173,0.3);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s ease, border-color 0.4s, box-shadow 0.4s;
+    cursor: pointer;
+  }
+  .post-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(74,158,255,0.6);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(74,158,255,0.1);
+  }
+  .post-card.featured {
+    grid-column: span 2;
+  }
+  .post-card-img {
+    width: 100%;
+    height: 220px;
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .post-card.featured .post-card-img { height: 320px; }
+  .post-card-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--navy) 0%, transparent 50%);
+  }
+  .post-card-img .emoji { font-size: 3.5rem; z-index: 1; filter: drop-shadow(0 0 20px rgba(0,212,255,0.5)); }
+  .post-card-body { padding: 28px; }
+  .post-category {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .post-category::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--cyan);
+  }
+  .post-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  .post-card.featured h3 { font-size: 2rem; }
+  .post-card p {
+    font-size: 0.9rem;
+    color: var(--gray);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(30,95,173,0.3);
+    padding-top: 16px;
+    margin-top: 4px;
+  }
+  .post-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--gray);
+    letter-spacing: 2px;
+  }
+  .post-read {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--blue-glow);
+    letter-spacing: 2px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: gap 0.3s;
+  }
+  .post-card:hover .post-read { gap: 12px; }
+
+  /* QUOTES */
+  #reflexiones {
+    padding: 120px 60px;
+    background: linear-gradient(180deg, var(--deep) 0%, var(--black) 100%);
+  }
+  .quotes-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .quote-showcase {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .quote-big {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue-dark) 100%);
+    border-left: 4px solid var(--cyan);
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .quote-big::before {
+    content: '"';
+    position: absolute;
+    top: -30px; left: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 18rem;
+    color: rgba(0,212,255,0.05);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .quote-big blockquote {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-style: italic;
+    color: var(--white);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+  }
+  .quote-author {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    margin-top: 24px;
+    text-transform: uppercase;
+  }
+  .quotes-small { display: flex; flex-direction: column; gap: 20px; }
+  .quote-small {
+    background: var(--navy);
+    border: 1px solid rgba(30,95,173,0.3);
+    padding: 28px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .quote-small:hover {
+    border-color: rgba(74,158,255,0.5);
+    transform: translateX(5px);
+  }
+  .quote-small blockquote {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: rgba(240,246,255,0.8);
+    line-height: 1.6;
+  }
+
+  /* CONTACT / COMMENTS */
+  #contacto {
+    padding: 120px 60px;
+    background: var(--black);
+  }
+  .contact-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 70px;
+  }
+  .contact-info h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  .contact-info p {
+    color: var(--gray);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 40px;
+  }
+  .contact-links { display: flex; flex-direction: column; gap: 16px; }
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gray);
+    letter-spacing: 2px;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .contact-link:hover { color: var(--cyan); }
+  .contact-link-icon {
+    width: 40px; height: 40px;
+    background: var(--navy);
+    border: 1px solid rgba(30,95,173,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .contact-link:hover .contact-link-icon {
+    border-color: var(--cyan);
+    background: rgba(0,212,255,0.1);
+  }
+
+  .comment-form { display: flex; flex-direction: column; gap: 18px; }
+  .comment-form h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+  }
+  .comment-form p.sub { color: var(--gray); font-size: 0.85rem; margin-bottom: 10px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--gray);
+    text-transform: uppercase;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    background: var(--navy);
+    border: 1px solid rgba(30,95,173,0.4);
+    color: var(--white);
+    padding: 14px 18px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.3s, background 0.3s;
+    resize: none;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: var(--blue-bright);
+    background: rgba(13,32,69,0.8);
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: rgba(138,155,181,0.5);
+  }
+  .btn-send {
+    padding: 16px 40px;
+    background: transparent;
+    border: 1px solid var(--blue-bright);
+    color: var(--blue-light);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: none;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.3s;
+    align-self: flex-start;
+  }
+  .btn-send::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--blue-bright);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+    z-index: -1;
+  }
+  .btn-send:hover { color: var(--black); }
+  .btn-send:hover::before { transform: scaleX(1); }
+
+  /* Comments display */
+  #comentarios-lista {
+    max-width: 1000px;
+    margin: 60px auto 0;
+  }
+  #comentarios-lista h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    color: var(--white);
+    border-bottom: 1px solid rgba(30,95,173,0.3);
+    padding-bottom: 16px;
+  }
+  .comment-item {
+    background: var(--navy);
+    border: 1px solid rgba(30,95,173,0.2);
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    animation: fadeUp 0.5s ease;
+  }
+  .comment-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--blue-bright), var(--cyan));
+  }
+  .comment-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .comment-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--blue-glow);
+    letter-spacing: 2px;
+  }
+  .comment-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--gray);
+  }
+  .comment-text {
+    color: rgba(240,246,255,0.75);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--deep);
+    border-top: 1px solid rgba(30,95,173,0.2);
+    padding: 50px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--white);
+  }
+  .footer-logo span { color: var(--cyan); }
+  .footer-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--gray);
+    letter-spacing: 3px;
+    text-align: center;
+  }
+  .footer-nav { display: flex; gap: 30px; }
+  .footer-nav a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--gray);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer-nav a:hover { color: var(--cyan); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    background: var(--blue-dark);
+    border: 1px solid var(--blue-bright);
+    color: var(--white);
+    padding: 16px 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    z-index: 1000;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Glitch text effect */
+  .glitch {
+    position: relative;
+  }
+  .glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Playfair Display', serif;
+  }
+  .glitch::before {
+    color: var(--cyan);
+    animation: glitch1 4s infinite steps(2);
+    clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  }
+  .glitch::after {
+    color: var(--blue-glow);
+    animation: glitch2 4s infinite steps(2);
+    clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+  }
+  @keyframes glitch1 {
+    0%, 90%, 100% { transform: translateX(0); }
+    93% { transform: translateX(-3px); }
+    96% { transform: translateX(3px); }
+  }
+  @keyframes glitch2 {
+    0%, 90%, 100% { transform: translateX(0); }
+    93% { transform: translateX(3px); }
+    96% { transform: translateX(-3px); }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    .hero-title { font-size: 3.5rem; }
+    #sobre-mi, #blog, #reflexiones, #contacto { padding: 80px 24px; }
+    .about-grid { grid-template-columns: 1fr; }
+    .posts-grid { grid-template-columns: 1fr; }
+    .post-card.featured { grid-column: span 1; }
+    .quote-showcase { grid-template-columns: 1fr; }
+    .contact-wrapper { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 20px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✦ Mensaje enviado con éxito</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">El <span>Mundo</span> de Abelardo</a>
+  <div class="nav-links">
+    <a href="#sobre-mi">Sobre Mí</a>
+    <a href="#blog">Blog</a>
+    <a href="#reflexiones">Reflexiones</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+
+  <!-- Decorative rings -->
+  <div class="globe-container" aria-hidden="true">
+    <div class="globe-ring" style="width:400px;height:400px;--rx:70deg;--ry:0deg;animation-duration:18s;"></div>
+    <div class="globe-ring" style="width:400px;height:400px;--rx:0deg;--ry:70deg;animation-duration:24s;"></div>
+    <div class="globe-ring" style="width:300px;height:300px;--rx:45deg;--ry:45deg;animation-duration:15s;"></div>
+    <div class="globe-ring" style="width:200px;height:200px;--rx:20deg;--ry:60deg;animation-duration:10s;"></div>
+  </div>
+
+  <div class="hero-content">
+    <p class="hero-tag">✦ Bienvenido a mi mundo ✦</p>
+    <h1 class="hero-title">
+      <span class="line1 glitch" data-text="El Mundo">El Mundo</span>
+      <span class="line2">de</span>
+      <span class="line3">Abelardo</span>
+    </h1>
+    <p class="hero-subtitle">Viajes, aventuras, reflexiones y todo lo que hace única a la vida. Un espacio donde comparto mi historia con el mundo.</p>
+    <a href="#blog" class="hero-cta">Explorar historias →</a>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- SOBRE MÍ -->
+<section id="sobre-mi">
+  <div class="section-header">
+    <span class="section-tag">Quién soy</span>
+    <h2 class="section-title">Sobre Abelardo</h2>
+    <div class="section-divider"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-image-frame">
+      <div class="about-image-placeholder">
+        <span class="avatar-text">A</span>
+      </div>
+      <div class="about-frame-deco"></div>
+      <div class="about-frame-dot"></div>
+    </div>
+    <div class="about-text">
+      <h3>Mi historia</h3>
+      <p>Soy Abelardo, un explorador de la vida que cree que cada rincón del mundo guarda una historia que merece ser contada. Nací con la curiosidad de entender el mundo y con las ganas de vivirlo al máximo.</p>
+      <p>A través de este blog comparto mis aventuras, los lugares que visito, las personas que conozco, las reflexiones que me surgen en el camino, y las pequeñas verdades que descubro cada día.</p>
+      <p>Aquí no hay filtros ni perfección — solo autenticidad, emoción y ganas de conectar con quienes sienten lo mismo que yo.</p>
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Aventuras</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">47</div>
+          <div class="stat-label">Destinos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">3</div>
+          <div class="stat-label">Años escribiendo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section id="blog">
+  <div class="section-header">
+    <span class="section-tag">Mis historias</span>
+    <h2 class="section-title">Últimas Entradas</h2>
+    <div class="section-divider"></div>
+  </div>
+  <div class="posts-grid">
+
+    <div class="post-card featured">
+      <div class="post-card-img">
+        <span class="emoji">🌊</span>
+      </div>
+      <div class="post-card-body">
+        <span class="post-category">Viajes</span>
+        <h3>El Pacífico me enseñó que los límites son solo ideas en la mente</h3>
+        <p>Hubo un momento, parado frente al océano en las costas de Oaxaca, donde entendí que las fronteras más difíciles de cruzar no son las de los países, sino las que construimos dentro de nosotros mismos...</p>
+        <div class="post-footer">
+          <span class="post-date">Febrero 2025</span>
+          <a href="#" class="post-read">Leer más →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-card-img">
+        <span class="emoji">🏔️</span>
+      </div>
+      <div class="post-card-body">
+        <span class="post-category">Aventura</span>
+        <h3>Cuatro días perdido en la Sierra Madre</h3>
+        <p>No fue un error, fue una decisión. Y resultó ser la mejor que tomé ese año.</p>
+        <div class="post-footer">
+          <span class="post-date">Enero 2025</span>
+          <a href="#" class="post-read">Leer →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-card-img">
+        <span class="emoji">☕</span>
+      </div>
+      <div class="post-card-body">
+        <span class="post-category">Reflexión</span>
+        <h3>Lo que una taza de café en Turquía me hizo pensar</h3>
+        <p>La lentitud como filosofía de vida. Una mañana que cambió mi forma de ver el tiempo.</p>
+        <div class="post-footer">
+          <span class="post-date">Diciembre 2024</span>
+          <a href="#" class="post-read">Leer →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-card-img">
+        <span class="emoji">🌙</span>
+      </div>
+      <div class="post-card-body">
+        <span class="post-category">Noche</span>
+        <h3>Las ciudades que nunca duermen y yo que nunca quise hacerlo</h3>
+        <p>De Bangkok a Buenos Aires, descubrí que la noche tiene su propio idioma.</p>
+        <div class="post-footer">
+          <span class="post-date">Nov 2024</span>
+          <a href="#" class="post-read">Leer →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-card-img">
+        <span class="emoji">📸</span>
+      </div>
+      <div class="post-card-body">
+        <span class="post-category">Vida</span>
+        <h3>Por qué dejé de fotografiar todo y empecé a vivir</h3>
+        <p>Guardé la cámara por un mes. Lo que aprendí cambió mi perspectiva para siempre.</p>
+        <div class="post-footer">
+          <span class="post-date">Oct 2024</span>
+          <a href="#" class="post-read">Leer →</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- REFLEXIONES -->
+<section id="reflexiones">
+  <div class="section-header">
+    <span class="section-tag">Mis palabras</span>
+    <h2 class="section-title">Frases & Reflexiones</h2>
+    <div class="section-divider"></div>
+  </div>
+  <div class="quotes-container">
+    <div class="quote-showcase">
+      <div class="quote-big">
+        <blockquote>"El mundo no se ve con los ojos, se ve con el alma. Y el alma solo se abre cuando dejamos de tener miedo de perdernos."</blockquote>
+        <p class="quote-author">— Abelardo</p>
+      </div>
+      <div class="quotes-small">
+        <div class="quote-small">
+          <blockquote>"No viajo para huir de mi vida, viajo para encontrarla en cada nuevo horizonte."</blockquote>
+          <p class="quote-author" style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--cyan);margin-top:12px;letter-spacing:3px;">— Abelardo</p>
+        </div>
+        <div class="quote-small">
+          <blockquote>"Cada persona que conoces en el camino es un espejo diferente de ti mismo."</blockquote>
+          <p class="quote-author" style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--cyan);margin-top:12px;letter-spacing:3px;">— Abelardo</p>
+        </div>
+        <div class="quote-small">
+          <blockquote>"Lo único que me he llevado de todos los lugares: la certeza de que hay infinito por descubrir."</blockquote>
+          <p class="quote-author" style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--cyan);margin-top:12px;letter-spacing:3px;">— Abelardo</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="section-header">
+    <span class="section-tag">Conectemos</span>
+    <h2 class="section-title">Déjame un Mensaje</h2>
+    <div class="section-divider"></div>
+  </div>
+  <div class="contact-wrapper">
+    <div class="contact-info">
+      <h3>¿Tienes algo que decirme?</h3>
+      <p>Me encanta saber lo que piensan quienes leen mis historias. Escríbeme, cuéntame tu propia aventura, hazme una pregunta o simplemente saluda. Todo mensaje vale.</p>
+      <div class="contact-links">
+        <a class="contact-link" href="#">
+          <div class="contact-link-icon">✉</div>
+          hola@elmundodeabelardo.com
+        </a>
+        <a class="contact-link" href="#">
+          <div class="contact-link-icon">📸</div>
+          @elmundodeabelardo
+        </a>
+        <a class="contact-link" href="#">
+          <div class="contact-link-icon">🐦</div>
+          @abelardo_mundo
+        </a>
+      </div>
+    </div>
+
+    <div class="comment-form">
+      <h3>Comentar o escribirme</h3>
+      <p class="sub">Tu comentario aparecerá en la página. ¡Únete a la conversación!</p>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" id="inp-name" placeholder="Tu nombre">
+        </div>
+        <div class="form-group">
+          <label>Correo (opcional)</label>
+          <input type="email" id="inp-email" placeholder="tu@email.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tipo de mensaje</label>
+        <select id="inp-type">
+          <option value="Comentario">💬 Comentario sobre el blog</option>
+          <option value="Mensaje">✉ Mensaje privado</option>
+          <option value="Pregunta">❓ Pregunta</option>
+          <option value="Aventura">🌍 Comparto mi aventura</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Mensaje</label>
+        <textarea id="inp-msg" rows="5" placeholder="Escríbeme lo que quieras..."></textarea>
+      </div>
+      <button class="btn-send" onclick="sendComment()">Enviar mensaje →</button>
+    </div>
+  </div>
+
+  <!-- Comments list -->
+  <div id="comentarios-lista">
+    <h3>✦ Comentarios de la comunidad</h3>
+    <div id="comments-container">
+      <div class="comment-item">
+        <div class="comment-meta">
+          <span class="comment-name">María L.</span>
+          <span class="comment-date">12 Feb 2025</span>
+        </div>
+        <p class="comment-text">Abelardo, tu artículo sobre el Pacífico me hizo llorar. Yo también siento que los límites están en la mente. ¡Sigue escribiendo por favor!</p>
+      </div>
+      <div class="comment-item">
+        <div class="comment-meta">
+          <span class="comment-name">Carlos V.</span>
+          <span class="comment-date">8 Feb 2025</span>
+        </div>
+        <p class="comment-text">La frase "no viajo para huir de mi vida, viajo para encontrarla" me describe perfectamente. ¿Cuándo escribes sobre Asia?</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">El <span>Mundo</span> de Abelardo</div>
+  <p class="footer-text">Hecho con ✦ y muchos kilómetros recorridos</p>
+  <nav class="footer-nav">
+    <a href="#sobre-mi">Sobre mí</a>
+    <a href="#blog">Blog</a>
+    <a href="#reflexiones">Reflexiones</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+</footer>
+
+<script>
+  // Stars
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.classList.add('star');
+    const size = Math.random() * 2.5 + 0.5;
+    s.style.cssText = `
+      width: ${size}px; height: ${size}px;
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      --dur: ${2 + Math.random() * 4}s;
+      animation-delay: ${Math.random() * 4}s;
+      opacity: ${Math.random() * 0.5};
+    `;
+    starsEl.appendChild(s);
+  }
+
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('a, button, .post-card, .quote-small').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform += ' scale(1.5)'; ring.style.width = '60px'; ring.style.height = '60px'; });
+    el.addEventListener('mouseleave', () => { ring.style.width = '36px'; ring.style.height = '36px'; });
+  });
+
+  // Comments
+  function sendComment() {
+    const name = document.getElementById('inp-name').value.trim();
+    const msg  = document.getElementById('inp-msg').value.trim();
+    const type = document.getElementById('inp-type').value;
+    if (!name || !msg) { alert('Por favor llena tu nombre y mensaje.'); return; }
+    const container = document.getElementById('comments-container');
+    const now = new Date();
+    const date = now.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+    const div = document.createElement('div');
+    div.className = 'comment-item';
+    div.innerHTML = `
+      <div class="comment-meta">
+        <span class="comment-name">${escapeHTML(name)} <span style="color:var(--gray);font-size:0.55rem;margin-left:8px;">(${type})</span></span>
+        <span class="comment-date">${date}</span>
+      </div>
+      <p class="comment-text">${escapeHTML(msg)}</p>
+    `;
+    container.insertBefore(div, container.firstChild);
+    document.getElementById('inp-name').value = '';
+    document.getElementById('inp-email').value = '';
+    document.getElementById('inp-msg').value = '';
+    // Toast
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+    document.getElementById('comentarios-lista').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Fade in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.post-card, .quote-big, .quote-small, .stat-item, .contact-info, .comment-form').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(30px)';
+    el.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
